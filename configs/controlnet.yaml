@@ -1,0 +1,7 @@
+# Write down the model name in the 'Model' folder that you actually downloaded.
+models:
+  checkpoint: "animagineXLV31_v31.safetensors"
+  vae: "sdxl_vae.safetensors"
+  lora: "yuru_flat.safetensors"
+  controlnet: "orbit_fp16.safetensors"
+  upscale: "RealESRGAN_x4plus_anime_6B.pth"
