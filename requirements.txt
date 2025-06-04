@@ -1,0 +1,13 @@
+einops>=0.8.1
+opencv-python>=4.11.0.86
+psutil>=7.0.0
+pyyaml>=6.0.2
+safetensors>=0.5.3
+sageattention>=1.0.6
+scipy>=1.15.3
+sentencepiece>=0.2.0
+spandrel>=0.4.1
+tokenizers>=0.21.1
+torchsde>=0.2.6
+tqdm>=4.67.1
+transformers>=4.52.4
