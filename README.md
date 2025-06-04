@@ -29,6 +29,11 @@ While [ComfyUI](https://github.com/comfyanonymous/ComfyUI) is highly visual and 
 
 ---
 
+## ⭐ Update
+
+- **Jun 05, 2025**: Added ```IPAdapter-Plus``` **(ViT-H + SDXL support**, **tested**). Initial validation in progress.
+
+---
 ## Features
 
 - **Composable Pipeline Building**  
@@ -119,6 +124,7 @@ executor(
 | T2IHireFixExecutor  | ![](examples/T2IHireFix.png)                 |
 | T2ILoRAExecutor  | ![](examples/T2ILoRA.png)                 |
 | IT2IExecutor  | ![](examples/IT2I.png)                 |
+| IPAdapterIT2I  | ![](examples/ipadapter_test.webp)            |
 
 ## Contributing
 

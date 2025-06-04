@@ -67,7 +67,7 @@ class ClipVisionModel:
         self.load_device = cores.model_management_utils.text_encoder_device()
         self.load_device = cores.model_management_utils.text_encoder_device()
         offload_device = cores.model_management_utils.text_encoder_offload_device()
-        self.dtype = cores.model_management.text_encoder_dtype(self.load_device)
+        self.dtype = cores.model_management_utils.text_encoder_dtype(self.load_device)
         self.model = model_class(
             config, self.dtype, offload_device, cores.ops.manual_cast
         )
