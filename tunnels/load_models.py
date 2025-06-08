@@ -7,8 +7,7 @@ from cores.path_utils import get_full_path_or_raise, get_folder_paths
 from cores.sd_model import (
     load_checkpoint_guess_config,
     load_lora_for_models,
-    load_clip,
-    CLIPType,
+    load_diffusion_model,
 )
 from cores.sd_model_class import VAE
 from cores.utils import load_torch_file, state_dict_prefix_replace
@@ -37,13 +36,16 @@ def load_checkpoint(ckpt_name: str) -> Tuple[IO.MODEL, IO.CLIP, IO.VAE]:
         >>> model, clip, vae = load_checkpoint("your_checkpoint.safetensors")
     """
     ckpt_path = get_full_path_or_raise("checkpoints", ckpt_name)
-    out = load_checkpoint_guess_config(
+    model, clip, vae, _ = load_checkpoint_guess_config(
         ckpt_path,
         output_vae=True,
         output_clip=True,
         embedding_directory=get_folder_paths("embeddings"),
     )
-    return out[:3]
+
+    if torch.cuda.is_available():
+        torch.cuda.empty_cache()
+    return model, clip, vae
 
 
 def load_vae(vae_name: str) -> IO.VAE:
@@ -153,25 +155,6 @@ def load_control_net(control_net_name: str) -> IO.CONTROL_NET:
     return controlnet
 
 
-def load_text_encoder(
-    model_name: str, type: str = "stable_diffusion", device: str = "default"
-) -> IO.CLIP:
-    clip_type = getattr(CLIPType, type.upper(), CLIPType.STABLE_DIFFUSION)
-    clip_path = get_full_path_or_raise("text_encoders", model_name)
-    model_options = {}
-    if device == "cpu":
-        model_options["load_device"] = model_options["offload_device"] = torch.device(
-            "cpu"
-        )
-    clip = load_clip(
-        ckpt_paths=[clip_path],
-        embedding_directory=get_folder_paths("embeddings"),
-        clip_type=clip_type,
-        model_options=model_options,
-    )
-    return clip
-
-
 def load_upscale_model(model_name: str) -> IO.UPSCALE_MODEL:
     """
     Loads an upscale model from the 'upscale_models' directory and returns a single-image model instance.
@@ -196,3 +179,40 @@ def load_upscale_model(model_name: str) -> IO.UPSCALE_MODEL:
         raise Exception("Upscale model must be a single-image model.")
 
     return out
+
+
+def load_unet(model_name: str, weight_dtype: str = "default") -> IO.MODEL:
+    """
+    Load a UNet diffusion model with optional FP8/FP16/FP32 dtype configuration.
+
+    Args:
+        model_name (str): The name (filename or identifier) of the diffusion model to load.
+        weight_dtype (str, optional): Desired weight dtype.
+            - "default": Use the model's default precision (usually fp16 or fp32).
+            - "fp8_e4m3fn": Use FP8 E4M3FN quantization.
+            - "fp8_e4m3fn_fast": Use FP8 E4M3FN with optimizations for speed.
+            - "fp8_e5m2": Use FP8 E5M2 quantization.
+            (default: "default")
+
+    Returns:
+        IO.MODEL: The loaded diffusion UNet model, ready for inference.
+
+    Raises:
+        FileNotFoundError: If the specified model file cannot be found.
+
+    Example:
+        >>> model = load_unet("sdxl_unet.safetensors", weight_dtype="fp8_e4m3fn")
+    """
+
+    model_options = {}
+    if weight_dtype == "fp8_e4m3fn":
+        model_options["dtype"] = torch.float8_e4m3fn
+    elif weight_dtype == "fp8_e4m3fn_fast":
+        model_options["dtype"] = torch.float8_e4m3fn
+        model_options["fp8_optimizations"] = True
+    elif weight_dtype == "fp8_e5m2":
+        model_options["dtype"] = torch.float8_e5m2
+
+    unet_path = get_full_path_or_raise("diffusion_models", model_name)
+    model = load_diffusion_model(unet_path, model_options=model_options)
+    return model

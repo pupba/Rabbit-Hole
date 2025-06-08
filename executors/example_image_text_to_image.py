@@ -78,14 +78,14 @@ class IT2IExecutor:
 
         samples = ksampler(
             self.MODEL,
+            pos_c,
+            neg_c,
             latent,
             seed,
             steps,
             cfg,
             sampler_name,
             scheduler,
-            pos_c,
-            neg_c,
             denoise,
         )
 

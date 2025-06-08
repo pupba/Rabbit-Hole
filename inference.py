@@ -1,30 +1,28 @@
 import defaults.bootstrap
 
-# from executors.example_text_to_image import (
-#     T2IExecutor,
-#     T2IHireFixExecutor,
-#     T2ILoRAExecutor,
-# )
-
-# from executors.example_image_text_to_image import IT2IExecutor
-
-from executors.example_ipadapter_image_text_to_image import IPAdapterIT2I
-
 if __name__ == "__main__":
-    # pass
+    pass
+    # from executors.example_text_to_image import (
+    #     T2IExecutor,
+    #     T2IHireFixExecutor,
+    #     T2ILoRAExecutor,
+    # )
+
     # executor = T2IExecutor()
     # executor = T2ILoRAExecutor()
     # executor = T2IHireFixExecutor()
 
     # executor(
-    #     "1girl, solo, long hair, ponytail, blue hair, blue eyes, open mouth, nose blush, shy, white background, masterpiece, best quality, very aesthetic, absurdres, anime coloring,",
-    #     "wings, nsfw, low quality, worst quality, normal quality",
-    #     1024,
-    #     1024,
-    #     30,
-    #     8.0,
-    #     124444,
+    #     pos_text="1girl, solo, long hair, ponytail, blue hair, blue eyes, open mouth, nose blush, shy, white background, masterpiece, best quality, very aesthetic, absurdres, anime coloring,",
+    #     neg_text="wings, nsfw, low quality, worst quality, normal quality",
+    #     width=1024,
+    #     height=1024,
+    #     steps=30,
+    #     cfg=8.0,
+    #     seed=124444,
     # )
+
+    # from executors.example_image_text_to_image import IT2IExecutor
 
     # executor = IT2IExecutor()
     # executor(
@@ -37,14 +35,22 @@ if __name__ == "__main__":
     #     6.0,
     #     12419249,
     # )
-    executor = IPAdapterIT2I()
-    executor(
-        image_path="./examples/reference.png",
-        ppromt="1girl, solo, long hair, ponytail, blue hair, blue eyes, open mouth, nose blush, shy, white background, masterpiece, best quality, very aesthetic, absurdres, anime coloring,",
-        nprompt="wings, nsfw, low quality, worst quality, normal quality",
-        width=1024,
-        height=1024,
-        steps=30,
-        cfg=8.0,
-        seed=124444,
-    )
+    # from executors.example_ipadapter_image_text_to_image import IPAdapterIT2I
+    # executor = IPAdapterIT2I()
+    # executor(
+    #     image_path="./examples/reference.png",
+    #     ppromt="1girl, solo, long hair, ponytail, blue hair, blue eyes, open mouth, nose blush, shy, white background, masterpiece, best quality, very aesthetic, absurdres, anime coloring,",
+    #     nprompt="wings, nsfw, low quality, worst quality, normal quality",
+    #     width=1024,
+    #     height=1024,
+    #     steps=30,
+    #     cfg=8.0,
+    #     seed=124444,
+    # )
+
+    from executors.example_flux import FluxSimpleExectuor, FluxUnderVRAM12GB
+
+    # executor = FluxSimpleExectuor()
+    # executor()
+    executor = FluxUnderVRAM12GB()
+    executor()

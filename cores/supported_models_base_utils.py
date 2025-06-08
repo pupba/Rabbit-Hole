@@ -96,8 +96,15 @@ class BASE:
         return out
 
     def process_clip_state_dict(self, state_dict):
+        # load clip mapping
+
         state_dict = utils.state_dict_prefix_replace(
-            state_dict, {k: "" for k in self.text_encoder_key_prefix}, filter_keys=True
+            state_dict,
+            {
+                k if k != "text_encoder_utils." else "text_encoders.": ""
+                for k in self.text_encoder_key_prefix
+            },
+            filter_keys=True,
         )
         return state_dict
 

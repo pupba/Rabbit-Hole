@@ -31,6 +31,8 @@ While [ComfyUI](https://github.com/comfyanonymous/ComfyUI) is highly visual and 
 
 ## ⭐ Update
 
+- **Jun 09, 2025**: Added **Flux T2I** support (**tested**). Flux ControlNet, IPAdapter, and Inpainting support coming soon.
+
 - **Jun 05, 2025**: Added ```IPAdapter-Plus``` **(ViT-H + SDXL support**, **tested**). Initial validation in progress.
 
 ---

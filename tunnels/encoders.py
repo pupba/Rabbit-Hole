@@ -1,7 +1,8 @@
 from cores.types import IO
+from cores.model_management_utils import current_loaded_models
 
 
-def encode(clip: IO.CLIP, text: str = "") -> IO.CONDITIONING:
+def encode(clip: IO.CLIP, text: str = "") -> tuple[IO.CONDITIONING, IO.CONDITIONING]:
     """
     Encodes a text prompt using the provided CLIP text encoder and returns a conditioning tensor.
 

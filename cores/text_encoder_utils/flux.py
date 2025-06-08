@@ -90,6 +90,7 @@ class FluxClipModel(torch.nn.Module):
 
 
 def flux_clip(dtype_t5=None, t5xxl_scaled_fp8=None):
+
     class FluxClipModel_(FluxClipModel):
         def __init__(self, device="cpu", dtype=None, model_options={}):
             if t5xxl_scaled_fp8 is not None and "t5xxl_scaled_fp8" not in model_options:

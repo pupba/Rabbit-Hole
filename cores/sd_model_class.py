@@ -63,6 +63,7 @@ class CLIP:
             return
         params = target.params.copy()
         clip = target.clip
+
         tokenizer = target.tokenizer
 
         load_device = model_options.get(
@@ -85,7 +86,6 @@ class CLIP:
             ),
         )
         params["model_options"] = model_options
-
         self.cond_stage_model = clip(**(params))
 
         for dt in self.cond_stage_model.dtypes:
@@ -106,6 +106,7 @@ class CLIP:
         self.patcher.hook_mode = cores.hooks.EnumHookMode.MinVram
         self.patcher.is_clip = True
         self.apply_hooks_to_conds = None
+
         if params["device"] == load_device:
             model_management_utils.load_models_gpu([self.patcher], force_full_load=True)
         self.layer_idx = None
@@ -311,14 +312,14 @@ class VAE:
                 decoder_config["alpha"] = 0.0
                 self.first_stage_model = AutoencodingEngine(
                     regularizer_config={
-                        "target": "utils.ldm.models.autoencoder.DiagonalGaussianRegularizer"
+                        "target": "cores.ldm.models.autoencoder.DiagonalGaussianRegularizer"
                     },
                     encoder_config={
-                        "target": "utils.ldm.modules.diffusionmodules.model.Encoder",
+                        "target": "cores.ldm.modules.diffusionmodules.model.Encoder",
                         "params": encoder_config,
                     },
                     decoder_config={
-                        "target": "utils.ldm.modules.temporal_ae.VideoDecoder",
+                        "target": "cores.ldm.modules.temporal_ae.VideoDecoder",
                         "params": decoder_config,
                     },
                 )
@@ -395,14 +396,14 @@ class VAE:
                 else:
                     self.first_stage_model = AutoencodingEngine(
                         regularizer_config={
-                            "target": "utils.ldm.models.autoencoder.DiagonalGaussianRegularizer"
+                            "target": "cores.ldm.models.autoencoder.DiagonalGaussianRegularizer"
                         },
                         encoder_config={
-                            "target": "utils.ldm.modules.diffusionmodules.model.Encoder",
+                            "target": "cores.ldm.modules.diffusionmodules.model.Encoder",
                             "params": ddconfig,
                         },
                         decoder_config={
-                            "target": "utils.ldm.modules.diffusionmodules.model.Decoder",
+                            "target": "cores.ldm.modules.diffusionmodules.model.Decoder",
                             "params": ddconfig,
                         },
                     )

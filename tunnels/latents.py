@@ -63,3 +63,28 @@ def empty_rgb(
     b_norm = torch.full([batch_size, height, width, 1], blue / 255.0)
     rgb_image = torch.cat((r_norm, g_norm, b_norm), dim=-1)
     return rgb_image
+
+
+def empty_sd3_latent_image(
+    width: int = 1024, height: int = 1024, batch_size: int = 1
+) -> Dict[str, IO.LATENT]:
+    """
+    Create an empty latent tensor for diffusion models.
+
+    Args:
+        width (int): Output image width (pixels).
+        height (int): Output image height (pixels).
+        batch_size (int): Number of latent samples in the batch.
+
+    Returns:
+        Dict[str, IO.LATENT]: Dictionary with a key "samples" and a value tensor of shape
+            (batch_size, 16, height//8, width//8), filled with zeros,
+            allocated on the device selected by `intermediate_device()`.
+
+    Example:
+        latent = empty_latent(1024, 1024, 2)
+        >>> latent["samples"].shape == (2, 16, 128, 128)
+    """
+    device = intermediate_device()
+    latent = torch.zeros([batch_size, 16, height // 8, width // 8], device=device)
+    return {"samples": latent}

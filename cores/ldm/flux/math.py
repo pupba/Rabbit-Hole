@@ -32,9 +32,9 @@ def attention(q: Tensor, k: Tensor, v: Tensor, pe: Tensor, mask=None) -> Tensor:
 def rope(pos: Tensor, dim: int, theta: int) -> Tensor:
     assert dim % 2 == 0
     if (
-        cores.model_management.is_device_mps(pos.device)
-        or cores.model_management.is_intel_xpu()
-        or cores.model_management.is_directml_enabled()
+        cores.model_management_utils.is_device_mps(pos.device)
+        or cores.model_management_utils.is_intel_xpu()
+        or cores.model_management_utils.is_directml_enabled()
     ):
         device = torch.device("cpu")
     else:

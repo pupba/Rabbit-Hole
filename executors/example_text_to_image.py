@@ -45,13 +45,13 @@ class T2IExecutor:
         samples = ksampler(
             self.MODEL,
             latent,
+            pos,
+            neg,
             seed,
             steps,
             cfg,
             sampler_name,
             scheduler,
-            pos,
-            neg,
             denoise,
         )
         out = vae_decode(self.VAE, samples)
@@ -91,13 +91,13 @@ class T2ILoRAExecutor:
         samples = ksampler(
             self.MODEL,
             latent,
+            pos,
+            neg,
             seed,
             steps,
             cfg,
             sampler_name,
             scheduler,
-            pos,
-            neg,
             denoise,
         )
         out = vae_decode(self.VAE, samples)
@@ -135,12 +135,12 @@ class T2IHireFixExecutor:
             self.MODEL,
             latent,
             seed,
+            pos,
+            neg,
             steps,
             cfg,
             sampler_name,
             scheduler,
-            pos,
-            neg,
             denoise,
         )
         # hirefix

@@ -43,7 +43,6 @@ if TYPE_CHECKING:
 
 def broadcast_image_to(tensor, target_batch_size, batched_number):
     current_batch_size = tensor.shape[0]
-    # print(current_batch_size, target_batch_size)
     if current_batch_size == 1:
         return tensor
 
@@ -341,7 +340,7 @@ class ControlNet(ControlBase):
             hint=self.cond_hint,
             timesteps=timestep.to(dtype),
             context=context.to(dtype),
-            **extra
+            **extra,
         )
         return self.control_merge(control, control_prev, output_dtype=None)
 
@@ -622,7 +621,7 @@ def load_controlnet_mmdit(sd, model_options={}):
         operations=operations,
         device=offload_device,
         dtype=unet_dtype,
-        **model_config.unet_config
+        **model_config.unet_config,
     )
     control_model = controlnet_load_state_dict(control_model, new_sd)
 
@@ -788,7 +787,7 @@ def load_controlnet_flux_xlabs_mistoline(sd, mistoline=False, model_options={}):
         operations=operations,
         device=offload_device,
         dtype=unet_dtype,
-        **model_config.unet_config
+        **model_config.unet_config,
     )
     control_model = controlnet_load_state_dict(control_model, sd)
     extra_conds = ["y", "guidance"]
@@ -831,7 +830,7 @@ def load_controlnet_flux_instantx(sd, model_options={}):
         operations=operations,
         device=offload_device,
         dtype=unet_dtype,
-        **model_config.unet_config
+        **model_config.unet_config,
     )
     control_model = controlnet_load_state_dict(control_model, new_sd)
 

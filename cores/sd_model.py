@@ -44,13 +44,8 @@ def load_checkpoint_guess_config(
     model_options: Optional[dict] = None,
     te_model_options: Optional[dict] = None,
 ) -> Any:
-    if model_options is None:
-        model_options = {}
-    if te_model_options is None:
-        te_model_options = {}
-    sd, metadata = cores.utils.load_torch_file(
-        ckpt_path, device=device, return_metadata=True, safe_load=True
-    )
+    sd, metadata = load_torch_file(ckpt_path, return_metadata=True)
+
     out = load_state_dict_guess_config(
         sd,
         output_vae,
@@ -141,6 +136,17 @@ def load_diffusion_model_state_dict(
     return cores.model_patcher.ModelPatcher(
         model, load_device=load_device, offload_device=offload_device
     )
+
+
+def load_diffusion_model(unet_path: str, model_options={}):
+    sd = load_torch_file(unet_path)
+    model = load_diffusion_model_state_dict(sd, model_options=model_options)
+    if model is None:
+        logging.error("ERROR UNSUPPORTED UNET {}".format(unet_path))
+        raise RuntimeError(
+            "ERROR: Could not detect model type of: {}".format(unet_path)
+        )
+    return model
 
 
 def load_state_dict_guess_config(
@@ -234,9 +240,11 @@ def load_state_dict_guess_config(
     if output_clip:
         clip_target = model_config.clip_target(state_dict=sd)
         if clip_target is not None:
+            # None
             clip_sd = model_config.process_clip_state_dict(sd)
             if len(clip_sd) > 0:
                 parameters = cores.utils.calculate_parameters(clip_sd)
+                # clip,tokenizer, params
                 clip = CLIP(
                     clip_target,
                     embedding_directory=embedding_directory,

@@ -141,8 +141,8 @@ class SD20(supported_models_base_utils.BASE):
 
     def clip_target(self, state_dict={}):
         return supported_models_base_utils.ClipTarget(
-            cores.text_encoders_utils.sd2_clip.SD2Tokenizer,
-            cores.text_encoders_utils.sd2_clip.SD2ClipModel,
+            cores.text_encoder_utils.sd2_clip.SD2Tokenizer,
+            cores.text_encoder_utils.sd2_clip.SD2ClipModel,
         )
 
 
@@ -639,7 +639,7 @@ class SD3(supported_models_base_utils.BASE):
 
     memory_usage_factor = 1.2
 
-    text_encoder_key_prefix = ["text_encoders_utils."]
+    text_encoder_key_prefix = ["text_encoder_utils."]
 
     def get_model(self, state_dict, prefix="", device=None):
         out = model_base.SD3(self, device=device)
@@ -650,6 +650,9 @@ class SD3(supported_models_base_utils.BASE):
         clip_g = False
         t5 = False
         pref = self.text_encoder_key_prefix[0]
+        # text_encoder_utils. -> text_encoders.
+        if pref == "text_encoder_utils.":
+            pref = "text_encoders."
         if (
             "{}clip_l.transformer.text_model.final_layer_norm.weight".format(pref)
             in state_dict
@@ -660,15 +663,15 @@ class SD3(supported_models_base_utils.BASE):
             in state_dict
         ):
             clip_g = True
-        t5_detect = cores.text_encoders_utils.sd3_clip.t5_xxl_detect(
+        t5_detect = cores.text_encoder_utils.sd3_clip.t5_xxl_detect(
             state_dict, "{}t5xxl.transformer.".format(pref)
         )
         if "dtype_t5" in t5_detect:
             t5 = True
 
         return supported_models_base_utils.ClipTarget(
-            cores.text_encoders_utils.sd3_clip.SD3Tokenizer,
-            cores.text_encoders_utils.sd3_clip.sd3_clip(
+            cores.text_encoder_utils.sd3_clip.SD3Tokenizer,
+            cores.text_encoder_utils.sd3_clip.sd3_clip(
                 clip_l=clip_l, clip_g=clip_g, t5=t5, **t5_detect
             ),
         )
@@ -684,7 +687,7 @@ class StableAudio(supported_models_base_utils.BASE):
     unet_extra_config = {}
     latent_format = latent_formats.StableAudio1
 
-    text_encoder_key_prefix = ["text_encoders_utils."]
+    text_encoder_key_prefix = ["text_encoder_utils."]
     vae_key_prefix = ["pretransform.model."]
 
     def get_model(self, state_dict, prefix="", device=None):
@@ -721,8 +724,8 @@ class StableAudio(supported_models_base_utils.BASE):
 
     def clip_target(self, state_dict={}):
         return supported_models_base_utils.ClipTarget(
-            cores.text_encoders_utils.sa_t5.SAT5Tokenizer,
-            cores.text_encoders_utils.sa_t5.SAT5Model,
+            cores.text_encoder_utils.sa_t5.SAT5Tokenizer,
+            cores.text_encoder_utils.sa_t5.SAT5Model,
         )
 
 
@@ -740,7 +743,7 @@ class AuraFlow(supported_models_base_utils.BASE):
     latent_format = latent_formats.SDXL
 
     vae_key_prefix = ["vae."]
-    text_encoder_key_prefix = ["text_encoders_utils."]
+    text_encoder_key_prefix = ["text_encoder_utils."]
 
     def get_model(self, state_dict, prefix="", device=None):
         out = model_base.AuraFlow(self, device=device)
@@ -748,8 +751,8 @@ class AuraFlow(supported_models_base_utils.BASE):
 
     def clip_target(self, state_dict={}):
         return supported_models_base_utils.ClipTarget(
-            cores.text_encoders_utils.aura_t5.AuraT5Tokenizer,
-            cores.text_encoders_utils.aura_t5.AuraT5Model,
+            cores.text_encoder_utils.aura_t5.AuraT5Tokenizer,
+            cores.text_encoder_utils.aura_t5.AuraT5Model,
         )
 
 
@@ -771,7 +774,7 @@ class PixArtAlpha(supported_models_base_utils.BASE):
     memory_usage_factor = 0.5
 
     vae_key_prefix = ["vae."]
-    text_encoder_key_prefix = ["text_encoders_utils."]
+    text_encoder_key_prefix = ["text_encoder_utils."]
 
     def get_model(self, state_dict, prefix="", device=None):
         out = model_base.PixArt(self, device=device)
@@ -779,8 +782,8 @@ class PixArtAlpha(supported_models_base_utils.BASE):
 
     def clip_target(self, state_dict={}):
         return supported_models_base_utils.ClipTarget(
-            cores.text_encoders_utils.pixart_t5.PixArtTokenizer,
-            cores.text_encoders_utils.pixart_t5.PixArtT5XXL,
+            cores.text_encoder_utils.pixart_t5.PixArtTokenizer,
+            cores.text_encoder_utils.pixart_t5.PixArtT5XXL,
         )
 
 
@@ -810,7 +813,7 @@ class HunyuanDiT(supported_models_base_utils.BASE):
     memory_usage_factor = 1.3
 
     vae_key_prefix = ["vae."]
-    text_encoder_key_prefix = ["text_encoders_utils."]
+    text_encoder_key_prefix = ["text_encoder_utils."]
 
     def get_model(self, state_dict, prefix="", device=None):
         out = model_base.HunyuanDiT(self, device=device)
@@ -818,8 +821,8 @@ class HunyuanDiT(supported_models_base_utils.BASE):
 
     def clip_target(self, state_dict={}):
         return supported_models_base_utils.ClipTarget(
-            cores.text_encoders_utils.hydit.HyditTokenizer,
-            cores.text_encoders_utils.hydit.HyditModel,
+            cores.text_encoder_utils.hydit.HyditTokenizer,
+            cores.text_encoder_utils.hydit.HyditModel,
         )
 
 
@@ -852,7 +855,7 @@ class Flux(supported_models_base_utils.BASE):
     supported_inference_dtypes = [torch.bfloat16, torch.float16, torch.float32]
 
     vae_key_prefix = ["vae."]
-    text_encoder_key_prefix = ["text_encoders_utils."]
+    text_encoder_key_prefix = ["text_encoder_utils."]
 
     def get_model(self, state_dict, prefix="", device=None):
         out = model_base.Flux(self, device=device)
@@ -860,12 +863,15 @@ class Flux(supported_models_base_utils.BASE):
 
     def clip_target(self, state_dict={}):
         pref = self.text_encoder_key_prefix[0]
-        t5_detect = cores.text_encoders_utils.sd3_clip.t5_xxl_detect(
+        # text_encoder_utils. -> text_encoders.
+        if pref == "text_encoder_utils.":
+            pref = "text_encoders."
+        t5_detect = cores.text_encoder_utils.sd3_clip.t5_xxl_detect(
             state_dict, "{}t5xxl.transformer.".format(pref)
         )
         return supported_models_base_utils.ClipTarget(
-            cores.text_encoders_utils.flux.FluxTokenizer,
-            cores.text_encoders_utils.flux.flux_clip(**t5_detect),
+            cores.text_encoder_utils.flux.FluxTokenizer,
+            cores.text_encoder_utils.flux.flux_clip(**t5_detect),
         )
 
 
@@ -913,7 +919,7 @@ class GenmoMochi(supported_models_base_utils.BASE):
     supported_inference_dtypes = [torch.bfloat16, torch.float32]
 
     vae_key_prefix = ["vae."]
-    text_encoder_key_prefix = ["text_encoders_utils."]
+    text_encoder_key_prefix = ["text_encoder_utils."]
 
     def get_model(self, state_dict, prefix="", device=None):
         out = model_base.GenmoMochi(self, device=device)
@@ -921,12 +927,15 @@ class GenmoMochi(supported_models_base_utils.BASE):
 
     def clip_target(self, state_dict={}):
         pref = self.text_encoder_key_prefix[0]
-        t5_detect = cores.text_encoders_utils.sd3_clip.t5_xxl_detect(
+        # text_encoder_utils. -> text_encoders.
+        if pref == "text_encoder_utils.":
+            pref = "text_encoders."
+        t5_detect = cores.text_encoder_utils.sd3_clip.t5_xxl_detect(
             state_dict, "{}t5xxl.transformer.".format(pref)
         )
         return supported_models_base_utils.ClipTarget(
-            cores.text_encoders_utils.genmo.MochiT5Tokenizer,
-            cores.text_encoders_utils.genmo.mochi_te(**t5_detect),
+            cores.text_encoder_utils.genmo.MochiT5Tokenizer,
+            cores.text_encoder_utils.genmo.mochi_te(**t5_detect),
         )
 
 
@@ -947,7 +956,7 @@ class LTXV(supported_models_base_utils.BASE):
     supported_inference_dtypes = [torch.bfloat16, torch.float32]
 
     vae_key_prefix = ["vae."]
-    text_encoder_key_prefix = ["text_encoders_utils."]
+    text_encoder_key_prefix = ["text_encoder_utils."]
 
     def __init__(self, unet_config):
         super().__init__(unet_config)
@@ -961,12 +970,15 @@ class LTXV(supported_models_base_utils.BASE):
 
     def clip_target(self, state_dict={}):
         pref = self.text_encoder_key_prefix[0]
-        t5_detect = cores.text_encoders_utils.sd3_clip.t5_xxl_detect(
+        # text_encoder_utils. -> text_encoders.
+        if pref == "text_encoder_utils.":
+            pref = "text_encoders."
+        t5_detect = cores.text_encoder_utils.sd3_clip.t5_xxl_detect(
             state_dict, "{}t5xxl.transformer.".format(pref)
         )
         return supported_models_base_utils.ClipTarget(
-            cores.text_encoders_utils.lt.LTXVT5Tokenizer,
-            cores.text_encoders_utils.lt.ltxv_te(**t5_detect),
+            cores.text_encoder_utils.lt.LTXVT5Tokenizer,
+            cores.text_encoder_utils.lt.ltxv_te(**t5_detect),
         )
 
 
@@ -987,7 +999,7 @@ class HunyuanVideo(supported_models_base_utils.BASE):
     supported_inference_dtypes = [torch.bfloat16, torch.float32]
 
     vae_key_prefix = ["vae."]
-    text_encoder_key_prefix = ["text_encoders_utils."]
+    text_encoder_key_prefix = ["text_encoder_utils."]
 
     def get_model(self, state_dict, prefix="", device=None):
         out = model_base.HunyuanVideo(self, device=device)
@@ -1029,14 +1041,15 @@ class HunyuanVideo(supported_models_base_utils.BASE):
 
     def clip_target(self, state_dict={}):
         pref = self.text_encoder_key_prefix[0]
-        hunyuan_detect = cores.text_encoders_utils.hunyuan_video.llama_detect(
+        # text_encoder_utils. -> text_encoders.
+        if pref == "text_encoder_utils.":
+            pref = "text_encoders."
+        hunyuan_detect = cores.text_encoder_utils.hunyuan_video.llama_detect(
             state_dict, "{}llama.transformer.".format(pref)
         )
         return supported_models_base_utils.ClipTarget(
-            cores.text_encoders_utils.hunyuan_video.HunyuanVideoTokenizer,
-            cores.text_encoders_utils.hunyuan_video.hunyuan_video_clip(
-                **hunyuan_detect
-            ),
+            cores.text_encoder_utils.hunyuan_video.HunyuanVideoTokenizer,
+            cores.text_encoder_utils.hunyuan_video.hunyuan_video_clip(**hunyuan_detect),
         )
 
 
@@ -1082,7 +1095,7 @@ class CosmosT2V(supported_models_base_utils.BASE):
     supported_inference_dtypes = [torch.bfloat16, torch.float16, torch.float32]  # TODO
 
     vae_key_prefix = ["vae."]
-    text_encoder_key_prefix = ["text_encoders_utils."]
+    text_encoder_key_prefix = ["text_encoder_utils."]
 
     def get_model(self, state_dict, prefix="", device=None):
         out = model_base.CosmosVideo(self, device=device)
@@ -1090,12 +1103,15 @@ class CosmosT2V(supported_models_base_utils.BASE):
 
     def clip_target(self, state_dict={}):
         pref = self.text_encoder_key_prefix[0]
-        t5_detect = cores.text_encoders_utils.sd3_clip.t5_xxl_detect(
+        # text_encoder_utils. -> text_encoders.
+        if pref == "text_encoder_utils.":
+            pref = "text_encoders."
+        t5_detect = cores.text_encoder_utils.sd3_clip.t5_xxl_detect(
             state_dict, "{}t5xxl.transformer.".format(pref)
         )
         return supported_models_base_utils.ClipTarget(
-            cores.text_encoders_utils.cosmos.CosmosT5Tokenizer,
-            cores.text_encoders_utils.cosmos.te(**t5_detect),
+            cores.text_encoder_utils.cosmos.CosmosT5Tokenizer,
+            cores.text_encoder_utils.cosmos.te(**t5_detect),
         )
 
 
@@ -1128,7 +1144,7 @@ class Lumina2(supported_models_base_utils.BASE):
     supported_inference_dtypes = [torch.bfloat16, torch.float32]
 
     vae_key_prefix = ["vae."]
-    text_encoder_key_prefix = ["text_encoders_utils."]
+    text_encoder_key_prefix = ["text_encoder_utils."]
 
     def get_model(self, state_dict, prefix="", device=None):
         out = model_base.Lumina2(self, device=device)
@@ -1136,12 +1152,15 @@ class Lumina2(supported_models_base_utils.BASE):
 
     def clip_target(self, state_dict={}):
         pref = self.text_encoder_key_prefix[0]
-        hunyuan_detect = cores.text_encoders_utils.hunyuan_video.llama_detect(
+        # text_encoder_utils. -> text_encoders.
+        if pref == "text_encoder_utils.":
+            pref = "text_encoders."
+        hunyuan_detect = cores.text_encoder_utils.hunyuan_video.llama_detect(
             state_dict, "{}gemma2_2b.transformer.".format(pref)
         )
         return supported_models_base_utils.ClipTarget(
-            cores.text_encoders_utils.lumina2.LuminaTokenizer,
-            cores.text_encoders_utils.lumina2.te(**hunyuan_detect),
+            cores.text_encoder_utils.lumina2.LuminaTokenizer,
+            cores.text_encoder_utils.lumina2.te(**hunyuan_detect),
         )
 
 
@@ -1163,7 +1182,7 @@ class WAN21_T2V(supported_models_base_utils.BASE):
     supported_inference_dtypes = [torch.float16, torch.bfloat16, torch.float32]
 
     vae_key_prefix = ["vae."]
-    text_encoder_key_prefix = ["text_encoders_utils."]
+    text_encoder_key_prefix = ["text_encoder_utils."]
 
     def __init__(self, unet_config):
         super().__init__(unet_config)
@@ -1175,12 +1194,15 @@ class WAN21_T2V(supported_models_base_utils.BASE):
 
     def clip_target(self, state_dict={}):
         pref = self.text_encoder_key_prefix[0]
-        t5_detect = cores.text_encoders_utils.sd3_clip.t5_xxl_detect(
+        # text_encoder_utils. -> text_encoders.
+        if pref == "text_encoder_utils.":
+            pref = "text_encoders."
+        t5_detect = cores.text_encoder_utils.sd3_clip.t5_xxl_detect(
             state_dict, "{}umt5xxl.transformer.".format(pref)
         )
         return supported_models_base_utils.ClipTarget(
-            cores.text_encoders_utils.wan.WanT5Tokenizer,
-            cores.text_encoders_utils.wan.te(**t5_detect),
+            cores.text_encoder_utils.wan.WanT5Tokenizer,
+            cores.text_encoder_utils.wan.te(**t5_detect),
         )
 
 
@@ -1282,7 +1304,7 @@ class HiDream(supported_models_base_utils.BASE):
     supported_inference_dtypes = [torch.bfloat16, torch.float32]
 
     vae_key_prefix = ["vae."]
-    text_encoder_key_prefix = ["text_encoders_utils."]
+    text_encoder_key_prefix = ["text_encoder_utils."]
 
     def get_model(self, state_dict, prefix="", device=None):
         out = model_base.HiDream(self, device=device)
@@ -1315,12 +1337,15 @@ class Chroma(supported_models_base_utils.BASE):
 
     def clip_target(self, state_dict={}):
         pref = self.text_encoder_key_prefix[0]
-        t5_detect = cores.text_encoders_utils.sd3_clip.t5_xxl_detect(
+        # text_encoder_utils. -> text_encoders.
+        if pref == "text_encoder_utils.":
+            pref = "text_encoders."
+        t5_detect = cores.text_encoder_utils.sd3_clip.t5_xxl_detect(
             state_dict, "{}t5xxl.transformer.".format(pref)
         )
         return supported_models_base_utils.ClipTarget(
-            cores.text_encoders_utils.pixart_t5.PixArtTokenizer,
-            cores.text_encoders_utils.pixart_t5.pixart_te(**t5_detect),
+            cores.text_encoder_utils.pixart_t5.PixArtTokenizer,
+            cores.text_encoder_utils.pixart_t5.pixart_te(**t5_detect),
         )
 
 
@@ -1342,7 +1367,7 @@ class ACEStep(supported_models_base_utils.BASE):
     supported_inference_dtypes = [torch.bfloat16, torch.float32]
 
     vae_key_prefix = ["vae."]
-    text_encoder_key_prefix = ["text_encoders_utils."]
+    text_encoder_key_prefix = ["text_encoder_utils."]
 
     def get_model(self, state_dict, prefix="", device=None):
         out = model_base.ACEStep(self, device=device)
@@ -1350,8 +1375,8 @@ class ACEStep(supported_models_base_utils.BASE):
 
     def clip_target(self, state_dict={}):
         return supported_models_base_utils.ClipTarget(
-            cores.text_encoders_utils.ace.AceT5Tokenizer,
-            cores.text_encoders_utils.ace.AceT5Model,
+            cores.text_encoder_utils.ace.AceT5Tokenizer,
+            cores.text_encoder_utils.ace.AceT5Model,
         )
 
 
