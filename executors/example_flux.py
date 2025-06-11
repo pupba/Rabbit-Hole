@@ -2,7 +2,7 @@ from tunnels.load_models import load_checkpoint, load_vae, load_unet
 from tunnels.load_clip import dual_clip_loader
 from tunnels.encoders import encode
 from tunnels.flux_tunnels.utils import flux_guidance
-from tunnels.latents import empty_sd3_latent_image, empty_latent
+from tunnels.latents import empty_sd3_latent_image, empty_latent, inpaintmodelconditioning
 from tunnels.samplers import (
     ksampler,
     basic_guider,
@@ -13,7 +13,7 @@ from tunnels.samplers import (
     ksampler_select,
 )
 from tunnels.vaes import vae_decode
-from tunnels.images import save_images
+from tunnels.images import save_images, load_image_with_mask_from_path
 
 
 class FluxSimpleExectuor:
@@ -83,4 +83,53 @@ class FluxUnderVRAM12GB:
 
         out = vae_decode(self.VAE, out)
 
+        save_images(out)
+
+class FluxInpainting:
+    def __init__(self):
+        self.MODEL = load_unet(
+            "flux1-fill-dev.safetensors", weight_dtype="bf16"
+        )
+        self.CLIP = dual_clip_loader(
+            "clip_l.safetensors", "t5xxl_fp8_e4m3fn.safetensors", "flux"
+        )
+        self.VAE = load_vae("ae.safetensors")
+
+
+    def __call__(
+        self,
+        image_path,
+        mask_path,
+    ):
+        pos = encode(
+            self.CLIP,
+            "anime girl with massive fennec ears blonde hair blue eyes wearing a pink shirt.",
+        )
+        neg = encode(
+            self.CLIP,
+            "",
+        )
+        pos = flux_guidance(pos, 30)
+        image, mask = load_image_with_mask_from_path(image_path, mask_path)
+
+        pos, neg, latent = inpaintmodelconditioning(
+            pos,
+            neg,
+            vae=self.VAE,
+            pixels=image,
+            mask=mask,
+            noise_mask=False
+        )
+
+        samples = ksampler(
+            poitive_condition=pos,
+            negative_condition=neg,
+            model=self.MODEL,
+            latent=latent,
+            seed=12412521,
+            cfg=1.0,
+            steps=20,
+        )
+
+        out = vae_decode(vae=self.VAE, samples=samples)
         save_images(out)
