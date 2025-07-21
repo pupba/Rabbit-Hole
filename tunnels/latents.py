@@ -1,9 +1,10 @@
-from typing import Dict
+from typing import Dict, List, Tuple
 import torch
 
 # cores
 from cores.model_management_utils import intermediate_device
 from cores.types import IO
+from cores.node_helpers import conditioning_set_values
 
 
 def empty_latent(
@@ -88,3 +89,45 @@ def empty_sd3_latent_image(
     device = intermediate_device()
     latent = torch.zeros([batch_size, 16, height // 8, width // 8], device=device)
     return {"samples": latent}
+
+def inpaintmodelconditioning(
+        positive,
+        negative,
+        vae,
+        pixels,
+        mask,
+        noise_mask=True
+    ) -> Tuple[IO.CONDITIONING, IO.CONDITIONING, Dict[str, IO.LATENT]]:
+
+    x = (pixels.shape[1] // 8) * 8
+    y = (pixels.shape[2] // 8) * 8
+    mask = torch.nn.functional.interpolate(mask.reshape((-1, 1, mask.shape[-2], mask.shape[-1])), size=(pixels.shape[1], pixels.shape[2]), mode="bilinear")
+
+    orig_pixels = pixels
+    pixels = orig_pixels.clone()
+    if pixels.shape[1] != x or pixels.shape[2] != y:
+        x_offset = (pixels.shape[1] % 8) // 2
+        y_offset = (pixels.shape[2] % 8) // 2
+        pixels = pixels[:,x_offset:x + x_offset, y_offset:y + y_offset,:]
+        mask = mask[:,:,x_offset:x + x_offset, y_offset:y + y_offset]
+
+    m = (1.0 - mask.round()).squeeze(1)
+    for i in range(3):
+        pixels[:,:,:,i] -= 0.5
+        pixels[:,:,:,i] *= m
+        pixels[:,:,:,i] += 0.5
+    concat_latent = vae.encode(pixels)
+    orig_latent = vae.encode(orig_pixels)
+
+    out_latent = {}
+
+    out_latent["samples"] = orig_latent
+    if noise_mask:
+        out_latent["noise_mask"] = mask
+
+    out = []
+    for conditioning in [positive, negative]:
+        c = conditioning_set_values(conditioning, {"concat_latent_image": concat_latent,
+                                                                "concat_mask": mask})
+        out.append(c)
+    return (out[0], out[1], out_latent)

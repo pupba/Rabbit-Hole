@@ -48,9 +48,17 @@ if __name__ == "__main__":
     #     seed=124444,
     # )
 
-    from executors.example_flux import FluxSimpleExectuor, FluxUnderVRAM12GB
+    from executors.example_flux import FluxSimpleExectuor, FluxUnderVRAM12GB, FluxInpainting
 
     # executor = FluxSimpleExectuor()
     # executor()
-    executor = FluxUnderVRAM12GB()
-    executor()
+    
+    executor = FluxInpainting()
+    executor(
+        image_path="./examples/flux_fill_inpaint_example.png",
+        mask_path="./examples/flux_fill_inpaint_example_mask.png",
+        # nprompt="",
+        # steps=20,
+        # cfg=8.0,
+        # seed=124444,
+    )
