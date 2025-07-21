@@ -26,6 +26,8 @@ from cores.ldm.modules.diffusionmodules.upscaling import (
     ImageConcatWithNoiseAugmentation,
 )
 from cores.ldm.modules.diffusionmodules.mmdit import OpenAISignatureMMDITWrapper
+from cores.utils import common_upscale
+from cores.utils import resize_to_batch_size
 import cores.ldm.genmo.joint_model.asymm_models_joint
 import cores.ldm.aura.mmdit
 import cores.ldm.pixart.pixartms
@@ -1112,10 +1114,10 @@ class Flux(BaseModel):
         if image is None:
             image = torch.zeros_like(noise)
 
-        image = cores.common_upscale(
+        image = common_upscale(
             image.to(device), noise.shape[-1], noise.shape[-2], "bilinear", "center"
         )
-        image = cores.resize_to_batch_size(image, noise.shape[0])
+        image = resize_to_batch_size(image, noise.shape[0])
         image = self.process_latent_in(image)
         if num_channels <= out_channels * 2:
             return image
@@ -1126,7 +1128,7 @@ class Flux(BaseModel):
             mask = torch.ones_like(noise)[:, :1]
 
         mask = torch.mean(mask, dim=1, keepdim=True)
-        mask = cores.common_upscale(
+        mask = common_upscale(
             mask.to(device),
             noise.shape[-1] * 8,
             noise.shape[-2] * 8,
@@ -1138,7 +1140,7 @@ class Flux(BaseModel):
             .permute(0, 2, 4, 1, 3)
             .reshape(mask.shape[0], -1, mask.shape[2] // 8, mask.shape[3] // 8)
         )
-        mask = cores.resize_to_batch_size(mask, noise.shape[0])
+        mask = resize_to_batch_size(mask, noise.shape[0])
         return torch.cat((image, mask), dim=1)
 
     def encode_adm(self, **kwargs):
